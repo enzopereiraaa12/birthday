@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+  <rect width="800" height="1000" fill="#ffc0cb"/>
+  <circle cx="402" cy="330" r="220" fill="#ff69b4" opacity=".55"/>
+  <rect x="128" y="160" width="544" height="690" rx="42" fill="#130813" opacity=".22" stroke="#fff" stroke-opacity=".5" stroke-width="4"/>
+  <text x="400" y="440" text-anchor="middle" font-family="Arial Black,Arial" font-size="104" fill="#fff">22</text>
+  <text x="400" y="560" text-anchor="middle" font-family="Arial Black,Arial" font-size="58" fill="#fff">BOSS LADY</text>
+  <text x="400" y="650" text-anchor="middle" font-family="Arial" font-size="36" fill="#fff">replace me</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+  <rect width="800" height="1000" fill="#160817"/>
+  <path d="M0 170C180 80 330 230 520 120s280-40 280-40v920H0z" fill="#ff69b4" opacity=".42"/>
+  <circle cx="590" cy="318" r="150" fill="#fff" opacity=".16"/>
+  <text x="400" y="488" text-anchor="middle" font-family="Arial Black,Arial" font-size="78" fill="#ffc0cb">2000 BABY</text>
+  <text x="400" y="590" text-anchor="middle" font-family="Arial" font-size="38" fill="#fff">gallery slot</text>
+</svg>
