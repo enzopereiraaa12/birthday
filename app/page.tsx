@@ -7,7 +7,6 @@ import InfoCards from "@/components/info-cards";
 import Playlist from "@/components/playlist";
 import RetroPopup from "@/components/retro-popup";
 import RSVPQuiz from "@/components/rsvp-quiz";
-import SoundToggle from "@/components/sound-toggle";
 import Trailer from "@/components/trailer";
 
 export default function Home() {
@@ -15,7 +14,6 @@ export default function Home() {
     <main className="relative min-h-screen overflow-hidden">
       <FloatingFX />
       <div className="noise" />
-      <SoundToggle />
       <AdminTab />
       <Hero />
       <Trailer />

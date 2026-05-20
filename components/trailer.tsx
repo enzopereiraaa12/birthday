@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Maximize2, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useRef, useState } from "react";
 import { EVENT, VIDEO_POSTER, VIDEO_SRC } from "@/lib/event-config";
 import SectionReveal from "./section-reveal";
@@ -34,6 +34,23 @@ export default function Trailer() {
     }
   };
 
+  const openFullscreen = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    await video.play().catch(() => undefined);
+    setPlaying(!video.paused);
+
+    const iosVideo = video as HTMLVideoElement & { webkitEnterFullscreen?: () => void };
+    if (iosVideo.webkitEnterFullscreen) {
+      iosVideo.webkitEnterFullscreen();
+      return;
+    }
+
+    if (video.requestFullscreen) {
+      await video.requestFullscreen().catch(() => undefined);
+    }
+  };
+
   return (
     <SectionReveal className="relative z-20 px-5 py-14 sm:px-8">
       <div id="trailer" className="mx-auto max-w-6xl">
@@ -41,12 +58,13 @@ export default function Trailer() {
           {VIDEO_SRC ? (
             <video
               ref={videoRef}
-              className="absolute inset-0 h-full w-full object-cover opacity-75"
+              className="absolute inset-0 h-full w-full object-cover opacity-82"
               poster={VIDEO_POSTER}
               autoPlay
               muted={muted}
               loop
               playsInline
+              controls={false}
               onPlay={() => setPlaying(true)}
               onPause={() => setPlaying(false)}
             >
@@ -56,7 +74,7 @@ export default function Trailer() {
             <img src={VIDEO_POSTER} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70" />
           )}
 
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_34%,rgba(255,192,203,.08),rgba(0,0,0,.78)_72%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_34%,rgba(255,192,203,.04),rgba(0,0,0,.62)_74%)]" />
           <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-white/20 to-transparent" />
           <div className="absolute inset-x-0 top-0 h-1/3 animate-scan bg-gradient-to-b from-transparent via-white/14 to-transparent" />
           <div className="absolute left-5 top-5 rounded-full border border-pink-100/40 bg-black/35 px-4 py-2 font-display text-[10px] uppercase tracking-[0.24em] text-pink-100 backdrop-blur-xl">
@@ -85,9 +103,21 @@ export default function Trailer() {
                   {muted ? <VolumeX size={24} /> : <Volume2 size={24} />}
                 </motion.button>
               )}
+              {VIDEO_SRC && (
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.92 }}
+                  onClick={openFullscreen}
+                  className="inline-flex h-16 items-center gap-2 rounded-full border border-white/45 bg-black/32 px-5 font-display text-xs uppercase tracking-[0.16em] text-white shadow-chrome backdrop-blur-xl"
+                  aria-label="Open video fullscreen"
+                >
+                  <Maximize2 size={21} />
+                  plein écran
+                </motion.button>
+              )}
             </div>
             <p className="mb-3 font-display text-xs uppercase tracking-[0.28em] text-pink-200">
-              official teaser
+              VHS teaser
             </p>
             <h2 className="max-w-2xl text-balance font-display text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
               {EVENT.teaserLine}

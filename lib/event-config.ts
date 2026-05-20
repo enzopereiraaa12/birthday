@@ -8,11 +8,11 @@ export const EVENT = {
   dressCode: "Pink vintage, 2000s, glossy",
   theme: "Vintage 2000 birthday party",
   birthdayBoy: "Enzo",
-  teaserLine: "This fall... an icon is back.",
-  teaserSubline: "Une nuit rose vintage, flash photo, glossy jacket et vibe 2000."
+  teaserLine: "Une nuit, un flash, une légende.",
+  teaserSubline: "12 novembre. Pink dress code. Caméscope, flashs, gloss et chaos très 2000."
 };
 
-export const VIDEO_SRC = "/videos/Something%20special.mp4";
+export const VIDEO_SRC = "/videos/teaser.mp4";
 export const VIDEO_POSTER = "/gallery/poster-y2k.svg";
 
 export const GALLERY_ITEMS = [

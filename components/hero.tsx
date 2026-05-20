@@ -21,11 +21,11 @@ export default function Hero() {
       >
         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/12 px-4 py-2 text-sm font-semibold text-pink-50 shadow-chrome backdrop-blur-xl">
           <Sparkles size={16} />
-          vintage 2000 birthday party
+          hot pink 2000 birthday tape
         </div>
 
-        <h1 className="chrome-text max-w-[11ch] font-display text-[clamp(4.1rem,22vw,10rem)] font-black uppercase leading-[0.84] tracking-normal">
-          {EVENT.altTitle}
+        <h1 className="chrome-text max-w-[10ch] font-display text-[clamp(4.3rem,23vw,10rem)] font-black uppercase leading-[0.82] tracking-normal">
+          Enzo 22
         </h1>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -38,9 +38,9 @@ export default function Hero() {
           </div>
         </div>
 
-        <p className="mt-7 max-w-xl text-balance text-lg leading-7 text-pink-50/86">
-          Invitation privée pour une nuit rose vintage, flash photo, paillettes,
-          verres teintés et énergie années 2000. Dress to be remembered.
+        <p className="mt-7 max-w-xl text-balance text-lg font-semibold leading-7 text-pink-50/86">
+          12 novembre. 19h30. Amiens. Sort les lunettes teintées, le rose, le gloss
+          et l'attitude clip MTV : ce soir-là, tout doit flasher.
         </p>
 
         <a
