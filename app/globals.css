@@ -33,6 +33,42 @@ body {
   font-family: var(--font-body);
 }
 
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.24;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(255,255,255,.22) 0 2px, transparent 3px),
+    radial-gradient(circle at 84% 18%, rgba(255,192,203,.28) 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 74%, rgba(255,255,255,.2) 0 1px, transparent 2px),
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 180px 180px, 220px 220px, 150px 150px, 86px 86px, 86px 86px;
+}
+
+body.vip-mode::after {
+  content: "VIP MODE UNLOCKED";
+  pointer-events: none;
+  position: fixed;
+  left: 50%;
+  top: 18%;
+  z-index: 90;
+  transform: translateX(-50%) rotate(-4deg);
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,105,180,.92));
+  color: #821048;
+  padding: 14px 22px;
+  box-shadow: 0 20px 80px rgba(255,105,180,.55);
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: .18em;
+  animation: vip-pop 4s ease both;
+}
+
 button,
 input,
 textarea {
@@ -135,6 +171,22 @@ button {
   to {
     opacity: 0;
     transform: translate(-50%, -140%) scale(.2);
+  }
+}
+
+@keyframes vip-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(18px) rotate(-8deg) scale(.75);
+  }
+  12%,
+  78% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) rotate(-4deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-18px) rotate(4deg) scale(.92);
   }
 }
 

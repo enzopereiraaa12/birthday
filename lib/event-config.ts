@@ -12,7 +12,7 @@ export const EVENT = {
   teaserSubline: "Une nuit rose vintage, flash photo, glossy jacket et vibe 2000."
 };
 
-export const VIDEO_SRC = "";
+export const VIDEO_SRC = "/videos/Something%20special.mp4";
 export const VIDEO_POSTER = "/gallery/poster-y2k.svg";
 
 export const GALLERY_ITEMS = [
@@ -24,15 +24,6 @@ export const GALLERY_ITEMS = [
     aspectRatio: "448 / 758",
     fit: "cover",
     position: "50% 38%"
-  },
-  {
-    src: "/gallery/memory-2.jpg",
-    fallback: "/gallery/memory-2.svg",
-    alt: "Mirror selfie vintage 2000",
-    width: 185,
-    aspectRatio: "206 / 348",
-    fit: "cover",
-    position: "50% 28%"
   },
   {
     src: "/gallery/memory-3.jpg",

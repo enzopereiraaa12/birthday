@@ -7,7 +7,7 @@ export default function SoundToggle() {
   const audioRef = useRef<{ context: AudioContext; interval: number } | null>(null);
   const [enabled, setEnabled] = useState(false);
 
-  const toggle = () => {
+  const toggle = async () => {
     if (enabled) {
       stopSound();
       setEnabled(false);
@@ -17,9 +17,10 @@ export default function SoundToggle() {
     const AudioCtor = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtor) return;
     const context = new AudioCtor();
-    const interval = window.setInterval(() => playSparkle(context), 2400);
+    await context.resume();
+    const interval = window.setInterval(() => playRingtone(context), 5200);
     audioRef.current = { context, interval };
-    playSparkle(context);
+    playRingtone(context);
     setEnabled(true);
   };
 
@@ -34,12 +35,13 @@ export default function SoundToggle() {
   return (
     <button
       type="button"
-      onClick={toggle}
-      className="fixed right-4 top-4 z-50 grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-white/12 text-white shadow-chrome backdrop-blur-xl transition active:scale-95"
+      onClick={() => void toggle()}
+      className="fixed right-4 top-4 z-50 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-black/35 px-3 text-xs font-black uppercase tracking-[0.12em] text-white shadow-chrome backdrop-blur-xl transition active:scale-95"
       aria-label={enabled ? "Disable sound" : "Enable sound"}
       title={enabled ? "Disable sound" : "Enable sound"}
     >
-      {enabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+      {enabled ? <Volume2 size={17} /> : <VolumeX size={17} />}
+      <span className="hidden sm:inline">{enabled ? "sound on" : "sound off"}</span>
     </button>
   );
 }
@@ -50,19 +52,20 @@ declare global {
   }
 }
 
-function playSparkle(context: AudioContext) {
+function playRingtone(context: AudioContext) {
+  const notes = [988, 1174, 1318, 1174, 1567, 1318];
   const now = context.currentTime;
-  [660, 990, 1320].forEach((frequency, index) => {
+  notes.forEach((frequency, index) => {
     const oscillator = context.createOscillator();
     const gain = context.createGain();
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(frequency, now + index * 0.08);
-    gain.gain.setValueAtTime(0, now + index * 0.08);
-    gain.gain.linearRampToValueAtTime(0.045, now + index * 0.08 + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.42);
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(frequency, now + index * 0.12);
+    gain.gain.setValueAtTime(0.0001, now + index * 0.12);
+    gain.gain.exponentialRampToValueAtTime(0.075, now + index * 0.12 + 0.018);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.12 + 0.11);
     oscillator.connect(gain);
     gain.connect(context.destination);
-    oscillator.start(now + index * 0.08);
-    oscillator.stop(now + index * 0.08 + 0.45);
+    oscillator.start(now + index * 0.12);
+    oscillator.stop(now + index * 0.12 + 0.12);
   });
 }
