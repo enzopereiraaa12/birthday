@@ -33,8 +33,8 @@ const config: Config = {
           "50%": { opacity: "1", transform: "scale(1.18) rotate(18deg)" }
         },
         floaty: {
-          "0%, 100%": { transform: "translate3d(0,0,0) rotate(-3deg)" },
-          "50%": { transform: "translate3d(0,-18px,0) rotate(5deg)" }
+          "0%, 100%": { transform: "translate3d(0,0,0) rotate(-6deg) scale(1)" },
+          "50%": { transform: "translate3d(0,-30px,0) rotate(10deg) scale(1.15)" }
         },
         scan: {
           "0%": { transform: "translateY(-100%)" },

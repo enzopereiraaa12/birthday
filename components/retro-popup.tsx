@@ -1,8 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageCircle, Sparkles, X } from "lucide-react";
+import { Heart, MessageCircle, Sparkles, Star, X } from "lucide-react";
 import { useEffect, useState } from "react";
+
+const BURST_ICONS = [Heart, Star, Sparkles, Heart, Star, Sparkles];
 
 export default function RetroPopup() {
   const [visible, setVisible] = useState(false);
@@ -30,10 +32,46 @@ export default function RetroPopup() {
           initial={{ opacity: 0, y: 28, scale: 0.94 }}
           animate={{ opacity: 1, y: 0, scale: clicked ? 1.03 : 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.94 }}
-          className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-sm overflow-hidden rounded-2xl border border-white/35 bg-white/15 shadow-glossy backdrop-blur-2xl"
+          className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-sm overflow-visible rounded-2xl border border-white/35 bg-white/15 shadow-glossy backdrop-blur-2xl"
         >
-          <div className="flex items-center justify-between border-b border-white/18 bg-pink-300/25 px-4 py-3">
+          {clicked && (
+            <div aria-hidden className="pointer-events-none absolute inset-0 z-20 overflow-visible">
+              {BURST_ICONS.map((Icon, index) => {
+                const angle = (index / BURST_ICONS.length) * Math.PI * 2;
+                const distance = 70;
+                return (
+                  <motion.span
+                    key={index}
+                    initial={{ opacity: 1, x: "50%", y: "50%", scale: 0.4 }}
+                    animate={{
+                      opacity: 0,
+                      x: `calc(50% + ${Math.cos(angle) * distance}px)`,
+                      y: `calc(50% + ${Math.sin(angle) * distance}px)`,
+                      scale: 1.15,
+                      rotate: index % 2 === 0 ? 40 : -40
+                    }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className="absolute left-0 top-0 text-pink-100 drop-shadow-[0_0_10px_rgba(255,105,180,.9)]"
+                  >
+                    <Icon size={18} fill="currentColor" />
+                  </motion.span>
+                );
+              })}
+              <motion.div
+                initial={{ opacity: 0.9 }}
+                animate={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
+                className="absolute inset-0 rounded-2xl bg-white"
+              />
+            </div>
+          )}
+
+          <div className="relative z-10 flex items-center justify-between border-b border-white/18 bg-pink-300/25 px-4 py-3">
             <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.12em] text-white">
+              <span className="relative grid h-6 w-6 place-items-center rounded-full border border-white/50 bg-gradient-to-br from-pink-200 to-fuchsia-500 text-[10px] font-black text-white">
+                E
+                <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border border-white bg-emerald-400" />
+              </span>
               <MessageCircle size={16} />
               Enzo Messenger
             </div>
@@ -44,7 +82,7 @@ export default function RetroPopup() {
           <button
             type="button"
             onClick={() => setClicked(true)}
-            className="relative block w-full overflow-hidden p-4 text-left transition active:scale-[.99]"
+            className="relative z-10 block w-full overflow-hidden p-4 text-left transition active:scale-[.99]"
           >
             {clicked && (
               <motion.div

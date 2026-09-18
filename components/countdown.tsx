@@ -23,13 +23,26 @@ export default function Countdown() {
 
   return (
     <SectionReveal className="relative z-20 px-5 py-12 sm:px-8">
-      <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-white/20 bg-gradient-to-br from-pink-400/28 via-white/10 to-fuchsia-900/24 p-5 shadow-glossy backdrop-blur-2xl sm:p-8">
-        <p className="font-display text-xs uppercase tracking-[0.28em] text-pink-100">countdown live</p>
-        <h2 className="mt-2 font-display text-3xl font-black uppercase text-white">Until iconic mode</h2>
+      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-white/20 bg-gradient-to-br from-pink-400/28 via-white/10 to-fuchsia-900/24 p-5 shadow-glossy backdrop-blur-2xl sm:p-8">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-70" />
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="font-display text-xs uppercase tracking-[0.28em] text-pink-100">countdown live</p>
+            <h2 className="mt-2 font-display text-3xl font-black uppercase text-white">Until iconic mode</h2>
+          </div>
+          <div className="hidden rotate-3 items-center gap-1.5 rounded-full border border-pink-100/35 bg-black/25 px-4 py-2 font-display text-[10px] uppercase tracking-[0.18em] text-pink-100 sm:flex">
+            <span className="rec-dot h-1.5 w-1.5 rounded-full bg-rose-400" />
+            ticking
+          </div>
+        </div>
         <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {units.map(([key, label]) => (
-            <div key={key} className="rounded-[1.4rem] border border-white/22 bg-black/22 p-4 text-center shadow-chrome">
-              <div className="chrome-text font-display text-4xl font-black tabular-nums">
+            <div
+              key={key}
+              className="relative overflow-hidden rounded-[1.4rem] border border-white/22 bg-black/22 p-4 text-center shadow-chrome"
+            >
+              <div className="absolute inset-x-3 top-1/2 h-px -translate-y-1/2 bg-white/10" />
+              <div className="chrome-text vhs-mono relative font-display text-4xl font-black">
                 {remaining ? String(remaining[key]).padStart(2, "0") : "--"}
               </div>
               <div className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-pink-100/80">{label}</div>

@@ -7,3 +7,5 @@ dist
 data/rsvps.json
 .tools
 *.log
+public/videos/teaser-original-backup.mp4
+tsconfig.tsbuildinfo

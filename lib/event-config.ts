@@ -8,12 +8,15 @@ export const EVENT = {
   dressCode: "Pink vintage, 2000s, glossy",
   theme: "Vintage 2000 birthday party",
   birthdayBoy: "Enzo",
-  teaserLine: "Une nuit, un flash, une légende.",
-  teaserSubline: "12 novembre. Pink dress code. Caméscope, flashs, gloss et chaos très 2000."
+  issueNumber: "N°22",
+  heroKicker: "The Birthday File",
+  heroTags: ["PINK ONLY", "GLOSS UP", "CAMERA FLASH READY", "NO BASIC ENERGY"],
+  teaserLine: "Une nuit. Un flash. Une légende.",
+  teaserSubline: "Caméscope, flashs, gloss et chaos très 2000. Appuie play."
 };
 
-export const VIDEO_SRC = "/videos/teaser.mp4";
-export const VIDEO_POSTER = "/gallery/poster-y2k.svg";
+export const TEASER_PHOTO = "/gallery/memory-4.jpg";
+export const TEASER_PHOTO_FALLBACK = "/gallery/memory-4.svg";
 
 export const GALLERY_ITEMS = [
   {
