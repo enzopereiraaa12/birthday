@@ -1,8 +1,8 @@
 export const EVENT = {
   title: "Enzo turns 22",
   altTitle: "Enzo turns 22",
-  dateLabel: "12 novembre",
-  targetDate: "2026-11-12T19:30:00+01:00",
+  dateLabel: "14 novembre",
+  targetDate: "2026-11-14T19:30:00+01:00",
   time: "19h30",
   location: "28 Place Vogel, Amiens",
   dressCode: "Pink vintage, 2000s, glossy",
@@ -48,5 +48,7 @@ export const GALLERY_ITEMS = [
   }
 ];
 
-export const PLAYLIST_EMBED_SRC =
-  "https://open.spotify.com/embed/playlist/4TKpYT24ByuIHEE2WoUWcL?utm_source=generator";
+export const PLAYLIST_ID = "4TKpYT24ByuIHEE2WoUWcL";
+export const PLAYLIST_OPENER_TRACK_ID = "5dBRz6giSIBDkXOhOD80KF"; // Theodora — Kongolese sous BBL
+
+export const PLAYLIST_EMBED_SRC = `https://open.spotify.com/embed/track/${PLAYLIST_OPENER_TRACK_ID}?context=spotify%3Aplaylist%3A${PLAYLIST_ID}&utm_source=generator`;

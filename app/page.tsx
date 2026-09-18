@@ -5,7 +5,6 @@ import Gallery from "@/components/gallery";
 import Hero from "@/components/hero";
 import InfoCards from "@/components/info-cards";
 import MarqueeBar from "@/components/marquee-bar";
-import Playlist from "@/components/playlist";
 import QueueGate from "@/components/queue-gate";
 import ReserveBar from "@/components/reserve-bar";
 import RetroPopup from "@/components/retro-popup";
@@ -27,7 +26,6 @@ export default function Home() {
       <QueueGate />
       <MarqueeBar reverse items={["GUEST LIST", "PINK VIP", "ADMIT ONE", "DRESS CODE PINK", "PLACES LIMITÉES", "22 ANS"]} />
       <Gallery />
-      <Playlist />
       <RetroPopup />
     </main>
   );

@@ -31,7 +31,7 @@ export async function sendRSVPEmail(record: RSVPRecord) {
     <div style="font-family:Inter,Arial,sans-serif;background:#130813;padding:28px;color:#fff">
       <div style="max-width:620px;margin:auto;border:1px solid rgba(255,192,203,.35);border-radius:24px;background:linear-gradient(145deg,rgba(255,105,180,.28),rgba(255,255,255,.08));padding:28px">
         <h1 style="color:#ffc0cb;margin:0 0 12px;font-size:28px">Nouvelle RSVP 💌</h1>
-        <p style="margin:0 0 22px;color:#f8d8e8">Anniversaire 22 ans - 12 novembre</p>
+        <p style="margin:0 0 22px;color:#f8d8e8">Anniversaire 22 ans - 14 novembre</p>
         <table style="width:100%;border-collapse:collapse">
           ${row("Prénom", record.firstName)}
           ${row("Présence", labels.attending[record.attending])}

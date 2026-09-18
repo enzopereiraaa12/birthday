@@ -61,7 +61,7 @@ export default function Trailer() {
           </div>
 
           <div className="vhs-mono absolute bottom-6 left-6 z-10 rounded-md bg-black/40 px-2.5 py-1 text-[11px] font-bold text-white/80 backdrop-blur-xl">
-            12·11·2026 19:30
+            14·11·2026 19:30
           </div>
 
           <div className="relative z-10 flex min-h-[520px] flex-col justify-end p-6 sm:p-10">

@@ -3,10 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Enzo turns 22",
-  description: "Invitation immersive pour l'anniversaire d'Enzo, 12 novembre.",
+  description: "Invitation immersive pour l'anniversaire d'Enzo, 14 novembre.",
   openGraph: {
     title: "Enzo turns 22",
-    description: "Level 22 unlocked. 12 novembre.",
+    description: "Level 22 unlocked. 14 novembre.",
     images: ["/gallery/poster-y2k.svg"]
   }
 };
