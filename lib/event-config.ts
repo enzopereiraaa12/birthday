@@ -49,6 +49,6 @@ export const GALLERY_ITEMS = [
 ];
 
 export const PLAYLIST_ID = "4TKpYT24ByuIHEE2WoUWcL";
-export const PLAYLIST_OPENER_TRACK_ID = "5dBRz6giSIBDkXOhOD80KF"; // Theodora — Kongolese sous BBL
+export const PLAYLIST_OPENER_TRACK_ID = "6sas5j8GHZWYlgNFqYbhY0"; // Lady Gaga — Poker Face
 
 export const PLAYLIST_EMBED_SRC = `https://open.spotify.com/embed/track/${PLAYLIST_OPENER_TRACK_ID}?context=spotify%3Aplaylist%3A${PLAYLIST_ID}&utm_source=generator`;

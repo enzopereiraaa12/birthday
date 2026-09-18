@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Ticket } from "lucide-react";
+import { smoothScrollTo } from "@/lib/scroll";
 
 export default function ReserveBar() {
   return (
@@ -14,6 +15,7 @@ export default function ReserveBar() {
     >
       <a
         href="#rsvp"
+        onClick={smoothScrollTo("rsvp")}
         className="flex h-12 items-center gap-2 font-display text-xs font-black uppercase tracking-[0.14em] text-white transition active:scale-95 sm:text-sm"
       >
         <Ticket size={16} className="shrink-0" />

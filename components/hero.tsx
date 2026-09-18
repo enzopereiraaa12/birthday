@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { CalendarHeart, ChevronDown, Sparkles, Star } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
+import { smoothScrollTo } from "@/lib/scroll";
 import MiniPlayer from "./mini-player";
 
 export default function Hero() {
@@ -137,6 +138,7 @@ export default function Hero() {
 
           <a
             href="#trailer"
+            onClick={smoothScrollTo("trailer")}
             className="holo-sweep is-active glossy-button shimmer-line mt-8 inline-flex min-h-14 items-center justify-center gap-2 rounded-full px-8 text-base font-bold uppercase tracking-[0.12em] transition active:scale-95"
           >
             <Sparkles size={18} />
@@ -145,6 +147,7 @@ export default function Hero() {
 
           <motion.a
             href="#trailer"
+            onClick={smoothScrollTo("trailer")}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, y: [0, 8, 0] }}
             transition={{ delay: 2, duration: 1.7, repeat: Infinity }}

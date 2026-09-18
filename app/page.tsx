@@ -8,11 +8,13 @@ import MarqueeBar from "@/components/marquee-bar";
 import QueueGate from "@/components/queue-gate";
 import ReserveBar from "@/components/reserve-bar";
 import RetroPopup from "@/components/retro-popup";
+import ScrollManager from "@/components/scroll-manager";
 import Trailer from "@/components/trailer";
 
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden">
+      <ScrollManager />
       <FloatingFX />
       <div className="aurora-bg" />
       <div className="noise" />
