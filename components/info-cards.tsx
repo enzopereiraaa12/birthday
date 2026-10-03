@@ -1,5 +1,6 @@
 import { CalendarDays, Clock, MapPin, Shirt, Sparkles } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
+import AddToCalendar from "./add-to-calendar";
 import SectionReveal from "./section-reveal";
 
 const cards = [
@@ -68,6 +69,8 @@ export default function InfoCards() {
             </article>
           ))}
         </div>
+
+        <AddToCalendar />
       </div>
     </SectionReveal>
   );

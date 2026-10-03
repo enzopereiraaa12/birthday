@@ -27,10 +27,30 @@ export async function POST(request: Request) {
       userAgent: request.headers.get("user-agent") || undefined
     };
 
-    await saveRSVP(record);
-    const emailResult = await sendRSVPEmail(record);
+    let saved = false;
+    try {
+      await saveRSVP(record);
+      saved = true;
+    } catch (error) {
+      console.error("saveRSVP failed (read-only filesystem on this host?)", error);
+    }
 
-    return NextResponse.json({ ok: true, email: emailResult });
+    let emailResult: { data?: unknown; error?: unknown; skipped?: boolean } = {};
+    try {
+      emailResult = await sendRSVPEmail(record);
+    } catch (error) {
+      console.error("sendRSVPEmail failed", error);
+      emailResult = { error };
+    }
+
+    if (!saved && !emailResult.skipped && emailResult.error) {
+      return NextResponse.json(
+        { ok: false, message: "Impossible d'envoyer le RSVP pour le moment." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ ok: true, saved, email: emailResult });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

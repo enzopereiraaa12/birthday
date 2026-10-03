@@ -38,7 +38,7 @@ export default function RetroPopup() {
             <div aria-hidden className="pointer-events-none absolute inset-0 z-20 overflow-visible">
               {BURST_ICONS.map((Icon, index) => {
                 const angle = (index / BURST_ICONS.length) * Math.PI * 2;
-                const distance = 70;
+                const distance = 42;
                 return (
                   <motion.span
                     key={index}
@@ -47,20 +47,20 @@ export default function RetroPopup() {
                       opacity: 0,
                       x: `calc(50% + ${Math.cos(angle) * distance}px)`,
                       y: `calc(50% + ${Math.sin(angle) * distance}px)`,
-                      scale: 1.15,
+                      scale: 1,
                       rotate: index % 2 === 0 ? 40 : -40
                     }}
-                    transition={{ duration: 1, ease: "easeOut" }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
                     className="absolute left-0 top-0 text-pink-100 drop-shadow-[0_0_10px_rgba(255,105,180,.9)]"
                   >
-                    <Icon size={18} fill="currentColor" />
+                    <Icon size={16} fill="currentColor" />
                   </motion.span>
                 );
               })}
               <motion.div
-                initial={{ opacity: 0.9 }}
+                initial={{ opacity: 0.3 }}
                 animate={{ opacity: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.5 }}
                 className="absolute inset-0 rounded-2xl bg-white"
               />
             </div>

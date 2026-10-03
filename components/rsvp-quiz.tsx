@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronLeft, ChevronRight, Heart, Loader2, Send } from "lucide-react";
 import { useMemo, useState } from "react";
+import AddToCalendar from "./add-to-calendar";
 
 type FormState = {
   firstName: string;
@@ -410,6 +411,9 @@ function Success() {
         <p className="mx-auto mt-4 max-w-sm text-pink-50/78">
           Merci. La réponse est enregistrée et envoyée au birthday boy.
         </p>
+        <div className="flex justify-center">
+          <AddToCalendar />
+        </div>
       </div>
     </div>
   );
