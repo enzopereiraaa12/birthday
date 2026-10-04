@@ -188,6 +188,12 @@ export default function AdminPage() {
     cancelEditPlayer();
   };
 
+  const deletePlayer = async (player: GamePlayer) => {
+    const ok = window.confirm(`Supprimer le compte de ${player.firstName} ? Ça le retire aussi de son binôme.`);
+    if (!ok) return;
+    await gameAction("deletePlayer", { playerId: player.id });
+  };
+
   const exportCsv = () => {
     const header = ["Nom", "Présent", "+1", "Accompagnant", "Alcool", "Allergies", "Message", "Date"];
     const rows = rsvps.map((rsvp) => [
@@ -548,13 +554,23 @@ export default function AdminPage() {
                                   ))}
                                 </ul>
                               )}
-                              <button
-                                type="button"
-                                onClick={() => startEditPlayer(player)}
-                                className="mt-3 inline-flex min-h-9 items-center rounded-full border border-white/20 bg-white/10 px-4 text-xs font-bold uppercase tracking-[0.1em] text-pink-50"
-                              >
-                                Éditer
-                              </button>
+                              <div className="mt-3 flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => startEditPlayer(player)}
+                                  className="inline-flex min-h-9 items-center rounded-full border border-white/20 bg-white/10 px-4 text-xs font-bold uppercase tracking-[0.1em] text-pink-50"
+                                >
+                                  Éditer
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => void deletePlayer(player)}
+                                  className="inline-flex min-h-9 items-center gap-2 rounded-full border border-pink-200/30 bg-pink-500/15 px-4 text-xs font-bold uppercase tracking-[0.1em] text-pink-100"
+                                >
+                                  <Trash2 size={14} />
+                                  Supprimer
+                                </button>
+                              </div>
                             </>
                           )}
                         </details>

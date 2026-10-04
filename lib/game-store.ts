@@ -120,6 +120,35 @@ export async function listPlayers(): Promise<Player[]> {
   return Object.values(players);
 }
 
+export async function deletePlayer(id: string): Promise<boolean> {
+  const players = await getPlayersMap();
+  const key = Object.keys(players).find((candidate) => players[candidate].id === id);
+  if (!key) return false;
+  const player = players[key];
+  delete players[key];
+  await setPlayersMap(players);
+
+  if (player.duoId) {
+    const duos = await getDuosMap();
+    const duo = duos[player.duoId];
+    if (duo) {
+      const memberIndex = duo.memberIds.indexOf(id);
+      if (memberIndex !== -1) {
+        duo.memberIds.splice(memberIndex, 1);
+        duo.memberNames.splice(memberIndex, 1);
+      }
+      if (duo.memberIds.length === 0) {
+        delete duos[player.duoId];
+      } else {
+        duos[player.duoId] = duo;
+      }
+      await setDuosMap(duos);
+    }
+  }
+
+  return true;
+}
+
 export async function getDuos(): Promise<Duo[]> {
   const duos = await getDuosMap();
   return Object.values(duos);

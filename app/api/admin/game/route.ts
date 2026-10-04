@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { TRIVIA_QUESTIONS } from "@/lib/game-config";
 import {
+  deletePlayer,
   getDuos,
   getGameState,
   listPlayers,
@@ -94,6 +95,13 @@ export async function POST(request: Request) {
 
   if (action === "reset") {
     await resetGame();
+  }
+
+  if (action === "deletePlayer") {
+    const { playerId } = body as { playerId?: string };
+    if (typeof playerId === "string") {
+      await deletePlayer(playerId);
+    }
   }
 
   if (action === "updatePlayer") {
