@@ -7,7 +7,7 @@ const cards = [
   { icon: CalendarDays, label: "Date", value: EVENT.dateLabel, tag: "001", sticker: "save it" },
   { icon: Clock, label: "Heure", value: EVENT.time, tag: "002", sticker: "don't be late" },
   { icon: MapPin, label: "Lieu", value: EVENT.location, tag: "003", sticker: "Amiens" },
-  { icon: Shirt, label: "Dress code", value: EVENT.dressCode, tag: "004", sticker: "pink only" },
+  { icon: Shirt, label: "Dress code", value: EVENT.dressCode, tag: "004", sticker: "touch of pink" },
   { icon: Sparkles, label: "Theme", value: EVENT.theme, tag: "005", sticker: "2000 baby" }
 ];
 

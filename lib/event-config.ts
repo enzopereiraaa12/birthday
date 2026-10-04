@@ -5,12 +5,12 @@ export const EVENT = {
   targetDate: "2026-11-14T19:30:00+01:00",
   time: "19h30",
   location: "28 Place Vogel, Amiens",
-  dressCode: "Pink vintage, 2000s, glossy",
+  dressCode: "Année 2000, une touche de rose",
   theme: "Vintage 2000 birthday party",
   birthdayBoy: "Enzo",
   issueNumber: "N°22",
   heroKicker: "The Birthday File",
-  heroTags: ["PINK ONLY", "GLOSS UP", "CAMERA FLASH READY", "NO BASIC ENERGY"],
+  heroTags: ["TOUCH OF PINK", "GLOSS UP", "CAMERA FLASH READY", "NO BASIC ENERGY"],
   teaserLine: "Une nuit. Un flash. Une légende.",
   teaserSubline: "Caméscope, flashs, gloss et chaos très 2000. Appuie play."
 };

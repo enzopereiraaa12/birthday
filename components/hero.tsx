@@ -130,7 +130,7 @@ export default function Hero() {
           </div>
 
           <p className="mt-7 max-w-xl text-balance font-display text-2xl font-black uppercase leading-8 text-white sm:text-3xl">
-            Lunettes teintées. Rose partout. Attitude clip MTV.
+            Lunettes teintées. Touche de rose. Attitude clip MTV.
           </p>
           <p className="mt-2 max-w-md text-balance text-base font-semibold leading-6 text-pink-50/78">
             Ce soir-là, tout doit flasher.

@@ -1,7 +1,8 @@
 "use client";
 
-import { ArrowLeft, Download, RefreshCw, Trash2 } from "lucide-react";
+import { ArrowLeft, Download, Play, RefreshCw, Shuffle, SkipForward, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { PROFILE_QUESTIONS } from "@/lib/game-config";
 import type { RSVPRecord } from "@/lib/rsvp-schema";
 
 type AdminResponse = {
@@ -11,6 +12,20 @@ type AdminResponse = {
   recipient: string;
 };
 
+type GamePlayer = {
+  id: string;
+  firstName: string;
+  hasProfile: boolean;
+  profileAnswers: number[] | null;
+  duoId: string | null;
+};
+type GameDuo = { id: string; memberIds: string[]; memberNames: string[]; score: number };
+type GameSnapshot = {
+  state: { phase: string; currentQuestionIndex: number };
+  players: GamePlayer[];
+  duos: GameDuo[];
+};
+
 export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [rsvps, setRsvps] = useState<RSVPRecord[]>([]);
@@ -18,6 +33,17 @@ export default function AdminPage() {
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<RSVPRecord>>({});
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const [game, setGame] = useState<GameSnapshot | null>(null);
+  const [gameError, setGameError] = useState("");
+  const [gameLoading, setGameLoading] = useState(false);
+  const [pendingDuos, setPendingDuos] = useState<Array<{ id: string; memberIds: string[] }>>([]);
+  const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
+  const [editPlayerName, setEditPlayerName] = useState("");
+  const [editPlayerAnswers, setEditPlayerAnswers] = useState<number[]>([]);
 
   const totals = useMemo(() => {
     return {
@@ -47,6 +73,7 @@ export default function AdminPage() {
     setLoading(true);
     try {
       await requestAdmin({});
+      await gameAction("refresh");
     } catch {
       setError("Mot de passe incorrect ou impossible de charger les réponses.");
     } finally {
@@ -66,6 +93,99 @@ export default function AdminPage() {
     } finally {
       setDeletingId(null);
     }
+  };
+
+  const startEdit = (rsvp: RSVPRecord) => {
+    setEditingId(rsvp.id);
+    setEditForm({ ...rsvp });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditForm({});
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    setSavingEdit(true);
+    setError("");
+    try {
+      await requestAdmin({
+        action: "edit",
+        id: editingId,
+        patch: {
+          firstName: editForm.firstName,
+          attending: editForm.attending,
+          plusOne: editForm.plusOne,
+          plusOneName: editForm.plusOneName,
+          alcohol: editForm.alcohol,
+          allergies: editForm.allergies,
+          message: editForm.message
+        }
+      });
+      setEditingId(null);
+      setEditForm({});
+    } catch {
+      setError("Impossible de modifier cette réponse.");
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const gameAction = async (action: string, payload?: Record<string, unknown>) => {
+    setGameError("");
+    setGameLoading(true);
+    try {
+      const response = await fetch("/api/admin/game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, action, ...payload })
+      });
+      const json = (await response.json()) as Partial<GameSnapshot> & { ok: boolean };
+      if (!response.ok || !json.ok) throw new Error("Action impossible.");
+      const snapshot = json as GameSnapshot;
+      setGame(snapshot);
+      setPendingDuos(snapshot.duos.map((duo) => ({ id: duo.id, memberIds: duo.memberIds })));
+    } catch {
+      setGameError("Mot de passe incorrect ou action impossible.");
+    } finally {
+      setGameLoading(false);
+    }
+  };
+
+  const updatePendingDuoMember = (duoId: string, memberIndex: number, playerId: string) => {
+    setPendingDuos((prev) =>
+      prev.map((duo) => {
+        if (duo.id !== duoId) return duo;
+        const memberIds = [...duo.memberIds];
+        memberIds[memberIndex] = playerId;
+        return { ...duo, memberIds };
+      })
+    );
+  };
+
+  const saveDuos = () => gameAction("setDuos", { duos: pendingDuos });
+
+  const startEditPlayer = (player: GamePlayer) => {
+    setEditingPlayerId(player.id);
+    setEditPlayerName(player.firstName);
+    setEditPlayerAnswers(player.profileAnswers ? [...player.profileAnswers] : Array(PROFILE_QUESTIONS.length).fill(0));
+  };
+
+  const cancelEditPlayer = () => {
+    setEditingPlayerId(null);
+    setEditPlayerName("");
+    setEditPlayerAnswers([]);
+  };
+
+  const saveEditPlayer = async () => {
+    if (!editingPlayerId) return;
+    await gameAction("updatePlayer", {
+      playerId: editingPlayerId,
+      firstName: editPlayerName,
+      profileAnswers: editPlayerAnswers
+    });
+    cancelEditPlayer();
   };
 
   const exportCsv = () => {
@@ -167,32 +287,329 @@ export default function AdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {rsvps.map((rsvp) => (
+                      {rsvps.map((rsvp) => {
+                        const isEditing = editingId === rsvp.id;
+                        return (
                         <tr key={rsvp.id} className="border-t border-white/10">
-                          <Td strong>{rsvp.firstName}</Td>
-                          <Td>{rsvp.attending === "yes" ? "Oui" : "Non"}</Td>
-                          <Td>{rsvp.plusOne === "one" ? "Oui" : "Non"}</Td>
-                          <Td>{rsvp.plusOneName || "-"}</Td>
-                          <Td>{alcoholLabel(rsvp.alcohol)}</Td>
-                          <Td>{rsvp.allergies || "-"}</Td>
-                          <Td>{rsvp.message || "-"}</Td>
+                          <Td strong>
+                            {isEditing ? (
+                              <EditInput value={editForm.firstName || ""} onChange={(v) => setEditForm((f) => ({ ...f, firstName: v }))} />
+                            ) : (
+                              rsvp.firstName
+                            )}
+                          </Td>
+                          <Td>
+                            {isEditing ? (
+                              <EditSelect
+                                value={editForm.attending || "yes"}
+                                options={[["yes", "Oui"], ["no", "Non"]]}
+                                onChange={(v) => setEditForm((f) => ({ ...f, attending: v as RSVPRecord["attending"] }))}
+                              />
+                            ) : rsvp.attending === "yes" ? (
+                              "Oui"
+                            ) : (
+                              "Non"
+                            )}
+                          </Td>
+                          <Td>
+                            {isEditing ? (
+                              <EditSelect
+                                value={editForm.plusOne || "none"}
+                                options={[["none", "Non"], ["one", "Oui"]]}
+                                onChange={(v) => setEditForm((f) => ({ ...f, plusOne: v as RSVPRecord["plusOne"] }))}
+                              />
+                            ) : rsvp.plusOne === "one" ? (
+                              "Oui"
+                            ) : (
+                              "Non"
+                            )}
+                          </Td>
+                          <Td>
+                            {isEditing ? (
+                              <EditInput
+                                value={editForm.plusOneName || ""}
+                                onChange={(v) => setEditForm((f) => ({ ...f, plusOneName: v }))}
+                                placeholder="Prénom du +1"
+                              />
+                            ) : (
+                              rsvp.plusOneName || "-"
+                            )}
+                          </Td>
+                          <Td>
+                            {isEditing ? (
+                              <EditSelect
+                                value={editForm.alcohol || "no"}
+                                options={[["yes", "Oui"], ["no", "Non"], ["little", "Un peu"]]}
+                                onChange={(v) => setEditForm((f) => ({ ...f, alcohol: v as RSVPRecord["alcohol"] }))}
+                              />
+                            ) : (
+                              alcoholLabel(rsvp.alcohol)
+                            )}
+                          </Td>
+                          <Td>
+                            {isEditing ? (
+                              <EditInput value={editForm.allergies || ""} onChange={(v) => setEditForm((f) => ({ ...f, allergies: v }))} />
+                            ) : (
+                              rsvp.allergies || "-"
+                            )}
+                          </Td>
+                          <Td>
+                            {isEditing ? (
+                              <EditInput value={editForm.message || ""} onChange={(v) => setEditForm((f) => ({ ...f, message: v }))} />
+                            ) : (
+                              rsvp.message || "-"
+                            )}
+                          </Td>
                           <Td>{new Date(rsvp.createdAt).toLocaleString("fr-FR")}</Td>
                           <Td>
-                            <button
-                              type="button"
-                              onClick={() => void deleteOne(rsvp)}
-                              disabled={deletingId === rsvp.id}
-                              className="inline-flex min-h-9 items-center gap-2 rounded-full border border-pink-200/30 bg-pink-500/15 px-3 text-xs font-bold uppercase tracking-[0.1em] text-pink-100 disabled:opacity-50"
-                            >
-                              <Trash2 size={14} />
-                              {deletingId === rsvp.id ? "..." : "Supprimer"}
-                            </button>
+                            {isEditing ? (
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => void saveEdit()}
+                                  disabled={savingEdit}
+                                  className="inline-flex min-h-9 items-center gap-1 rounded-full border border-emerald-300/30 bg-emerald-400/15 px-3 text-xs font-bold uppercase tracking-[0.1em] text-emerald-200 disabled:opacity-50"
+                                >
+                                  {savingEdit ? "..." : "Sauver"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={cancelEdit}
+                                  className="inline-flex min-h-9 items-center gap-1 rounded-full border border-white/20 bg-white/10 px-3 text-xs font-bold uppercase tracking-[0.1em] text-pink-50"
+                                >
+                                  Annuler
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => startEdit(rsvp)}
+                                  className="inline-flex min-h-9 items-center gap-1 rounded-full border border-white/20 bg-white/10 px-3 text-xs font-bold uppercase tracking-[0.1em] text-pink-50"
+                                >
+                                  Éditer
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => void deleteOne(rsvp)}
+                                  disabled={deletingId === rsvp.id}
+                                  className="inline-flex min-h-9 items-center gap-2 rounded-full border border-pink-200/30 bg-pink-500/15 px-3 text-xs font-bold uppercase tracking-[0.1em] text-pink-100 disabled:opacity-50"
+                                >
+                                  <Trash2 size={14} />
+                                  {deletingId === rsvp.id ? "..." : "Supprimer"}
+                                </button>
+                              </div>
+                            )}
                           </Td>
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
+              )}
+            </section>
+
+            <section className="mt-10 glass rounded-[2rem] p-5 sm:p-7">
+              <h2 className="font-display text-2xl font-black uppercase sm:text-3xl">Jeu — binômes</h2>
+              {gameError && <p className="mt-3 font-semibold text-pink-100">{gameError}</p>}
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => gameAction("match")}
+                  disabled={gameLoading}
+                  className="glossy-button inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-xs font-black uppercase tracking-[0.12em] disabled:opacity-60"
+                >
+                  <Shuffle size={15} />
+                  Lancer l'appariement
+                </button>
+                <button
+                  type="button"
+                  onClick={() => gameAction("validate")}
+                  disabled={gameLoading || !game?.duos.length}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 text-xs font-bold uppercase tracking-[0.1em] text-pink-50 disabled:opacity-40"
+                >
+                  Valider les binômes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => gameAction("startLive")}
+                  disabled={gameLoading}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 text-xs font-bold uppercase tracking-[0.1em] text-pink-50 disabled:opacity-40"
+                >
+                  <Play size={14} />
+                  Ouvrir le jeu live
+                </button>
+                <button
+                  type="button"
+                  onClick={() => gameAction("nextQuestion")}
+                  disabled={gameLoading}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 text-xs font-bold uppercase tracking-[0.1em] text-pink-50 disabled:opacity-40"
+                >
+                  <SkipForward size={14} />
+                  Question suivante
+                </button>
+                <button
+                  type="button"
+                  onClick={() => gameAction("end")}
+                  disabled={gameLoading}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 text-xs font-bold uppercase tracking-[0.1em] text-pink-50 disabled:opacity-40"
+                >
+                  Terminer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm("Réinitialiser tout le jeu (comptes, réponses, binômes) ?")) gameAction("reset");
+                  }}
+                  disabled={gameLoading}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-pink-200/30 bg-pink-500/15 px-5 text-xs font-bold uppercase tracking-[0.1em] text-pink-100 disabled:opacity-40"
+                >
+                  Réinitialiser
+                </button>
+              </div>
+
+              {game && (
+                <>
+                  <p className="mt-5 text-sm font-semibold text-pink-100/80">
+                    État : <span className="font-black text-white">{game.state.phase}</span> · {game.players.length} joueur(s),{" "}
+                    {game.players.filter((p) => p.hasProfile).length} ont répondu au quiz de goûts
+                  </p>
+
+                  {game.players.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <p className="font-display text-xs uppercase tracking-[0.2em] text-pink-200">joueurs inscrits</p>
+                      {game.players.map((player) => {
+                        const isEditingPlayer = editingPlayerId === player.id;
+                        return (
+                        <details key={player.id} className="rounded-xl border border-white/15 bg-white/8 p-3" open={isEditingPlayer}>
+                          <summary className="flex cursor-pointer items-center justify-between gap-2 font-bold text-white">
+                            <span>{player.firstName}</span>
+                            <span
+                              className={`rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.1em] ${
+                                player.hasProfile ? "bg-emerald-400/25 text-emerald-200" : "bg-white/10 text-pink-100/60"
+                              }`}
+                            >
+                              {player.hasProfile ? "a répondu" : "en attente"}
+                            </span>
+                          </summary>
+
+                          {isEditingPlayer ? (
+                            <div className="mt-3 space-y-3 text-sm text-pink-50/85">
+                              <div>
+                                <p className="mb-1 text-xs uppercase tracking-[0.1em] text-pink-100/60">Prénom</p>
+                                <EditInput value={editPlayerName} onChange={setEditPlayerName} />
+                              </div>
+                              {PROFILE_QUESTIONS.map((question, qIndex) => (
+                                <div key={question.question}>
+                                  <p className="mb-1 text-xs text-pink-100/60">{question.question}</p>
+                                  <EditSelect
+                                    value={String(editPlayerAnswers[qIndex] ?? 0)}
+                                    options={question.options.map((opt, i) => [String(i), opt])}
+                                    onChange={(v) =>
+                                      setEditPlayerAnswers((prev) => {
+                                        const next = [...prev];
+                                        next[qIndex] = Number(v);
+                                        return next;
+                                      })
+                                    }
+                                  />
+                                </div>
+                              ))}
+                              <div className="flex gap-2 pt-1">
+                                <button
+                                  type="button"
+                                  onClick={() => void saveEditPlayer()}
+                                  className="glossy-button inline-flex min-h-9 items-center rounded-full px-4 text-xs font-black uppercase tracking-[0.1em]"
+                                >
+                                  Sauver
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={cancelEditPlayer}
+                                  className="inline-flex min-h-9 items-center rounded-full border border-white/20 bg-white/10 px-4 text-xs font-bold uppercase tracking-[0.1em] text-pink-50"
+                                >
+                                  Annuler
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              {player.profileAnswers && (
+                                <ul className="mt-3 space-y-1 text-sm text-pink-50/85">
+                                  {PROFILE_QUESTIONS.map((question, index) => (
+                                    <li key={question.question}>
+                                      <span className="text-pink-100/60">{question.question}</span>{" "}
+                                      <span className="font-semibold text-white">
+                                        {question.options[player.profileAnswers![index]]}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => startEditPlayer(player)}
+                                className="mt-3 inline-flex min-h-9 items-center rounded-full border border-white/20 bg-white/10 px-4 text-xs font-bold uppercase tracking-[0.1em] text-pink-50"
+                              >
+                                Éditer
+                              </button>
+                            </>
+                          )}
+                        </details>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {pendingDuos.length > 0 && (
+                    <div className="mt-5 space-y-3">
+                      {pendingDuos.map((duo) => (
+                        <div key={duo.id} className="flex flex-wrap items-center gap-2 rounded-xl border border-white/15 bg-white/8 p-3">
+                          {duo.memberIds.map((memberId, memberIndex) => (
+                            <select
+                              key={memberIndex}
+                              value={memberId}
+                              onChange={(event) => updatePendingDuoMember(duo.id, memberIndex, event.target.value)}
+                              className="min-h-10 rounded-lg border border-white/20 bg-black/30 px-2 text-sm text-white"
+                            >
+                              {game.players.map((player) => (
+                                <option key={player.id} value={player.id}>
+                                  {player.firstName}
+                                </option>
+                              ))}
+                            </select>
+                          ))}
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={saveDuos}
+                        disabled={gameLoading}
+                        className="glossy-button mt-2 inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-xs font-black uppercase tracking-[0.12em] disabled:opacity-60"
+                      >
+                        Enregistrer les binômes
+                      </button>
+                    </div>
+                  )}
+
+                  {game.duos.length > 0 && game.state.phase === "live" && (
+                    <div className="mt-5 space-y-2">
+                      <p className="font-display text-xs uppercase tracking-[0.2em] text-pink-200">classement</p>
+                      {[...game.duos]
+                        .sort((a, b) => b.score - a.score)
+                        .map((duo, index) => (
+                          <div key={duo.id} className="flex items-center justify-between rounded-xl border border-white/15 bg-white/8 px-4 py-2">
+                            <span className="font-bold text-white">
+                              #{index + 1} {duo.memberNames.join(" & ")}
+                            </span>
+                            <span className="font-display text-lg font-black text-pink-100">{duo.score}</span>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </>
               )}
             </section>
           </>
@@ -208,6 +625,49 @@ function Stat({ label, value }: { label: string; value: number }) {
       <p className="text-xs font-bold uppercase tracking-[0.16em] text-pink-200/80">{label}</p>
       <p className="mt-1 font-display text-4xl font-black text-white">{value}</p>
     </div>
+  );
+}
+
+function EditInput({
+  value,
+  onChange,
+  placeholder
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <input
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      placeholder={placeholder}
+      className="min-h-9 w-full min-w-[120px] rounded-lg border border-white/20 bg-black/30 px-2 text-sm text-white outline-none"
+    />
+  );
+}
+
+function EditSelect({
+  value,
+  options,
+  onChange
+}: {
+  value: string;
+  options: Array<[string, string]>;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      className="min-h-9 rounded-lg border border-white/20 bg-black/30 px-2 text-sm text-white"
+    >
+      {options.map(([optionValue, label]) => (
+        <option key={optionValue} value={optionValue}>
+          {label}
+        </option>
+      ))}
+    </select>
   );
 }
 

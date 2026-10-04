@@ -25,7 +25,7 @@ export default function QueueGate() {
   const cancelledRef = useRef(false);
 
   const join = () => {
-    const start = 1200 + Math.floor(Math.random() * 2400);
+    const start = 400 + Math.floor(Math.random() * 900);
     setStartPosition(start);
     setPosition(start);
     setPhase("queuing");
@@ -39,19 +39,19 @@ export default function QueueGate() {
 
     const tick = () => {
       if (cancelledRef.current) return;
-      const step = Math.max(1, Math.round(current * (0.1 + Math.random() * 0.16)));
+      const step = Math.max(1, Math.round(current * (0.22 + Math.random() * 0.18)));
       current = Math.max(0, current - step);
       setPosition(current);
       if (current <= 0) {
         timeoutId = window.setTimeout(() => {
           if (!cancelledRef.current) setPhase("ready");
-        }, 450);
+        }, 350);
         return;
       }
-      timeoutId = window.setTimeout(tick, 240 + Math.random() * 260);
+      timeoutId = window.setTimeout(tick, 150 + Math.random() * 180);
     };
 
-    timeoutId = window.setTimeout(tick, 500);
+    timeoutId = window.setTimeout(tick, 300);
     return () => {
       cancelledRef.current = true;
       window.clearTimeout(timeoutId);

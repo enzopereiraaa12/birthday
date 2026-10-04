@@ -1,18 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { Redis } from "@upstash/redis";
+import { getRedis } from "./redis";
 import type { RSVPRecord } from "./rsvp-schema";
 
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "rsvps.json");
 const REDIS_KEY = "rsvps";
-
-function getRedis(): Redis | null {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
-  return new Redis({ url, token });
-}
 
 function sortByNewest(records: RSVPRecord[]) {
   return records.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
@@ -43,6 +36,30 @@ export async function deleteRSVP(id: string): Promise<boolean> {
   const nextRecords = records.filter((record) => record.id !== id);
   await fs.writeFile(dataFile, JSON.stringify(nextRecords, null, 2), "utf8");
   return nextRecords.length !== records.length;
+}
+
+export async function updateRSVP(
+  id: string,
+  patch: Partial<Omit<RSVPRecord, "id" | "createdAt">>
+): Promise<RSVPRecord | null> {
+  const redis = getRedis();
+  if (redis) {
+    const all = await getRSVPs();
+    const record = all.find((entry) => entry.id === id);
+    if (!record) return null;
+    const updated = { ...record, ...patch };
+    await redis.hset(REDIS_KEY, { [id]: JSON.stringify(updated) });
+    return updated;
+  }
+
+  await fs.mkdir(dataDir, { recursive: true });
+  const records = await getRSVPs();
+  const index = records.findIndex((entry) => entry.id === id);
+  if (index === -1) return null;
+  const updated = { ...records[index], ...patch };
+  records[index] = updated;
+  await fs.writeFile(dataFile, JSON.stringify(records, null, 2), "utf8");
+  return updated;
 }
 
 export async function getRSVPs(): Promise<RSVPRecord[]> {

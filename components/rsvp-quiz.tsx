@@ -221,7 +221,12 @@ function StepContent({
     return (
       <Question
         title="Viendras-tu accompagné(e) ?"
-        subtitle="Si tu veux venir avec un +1, merci de confirmer avec moi avant."
+        subtitle={
+          <>
+            Si tu veux venir avec un +1,{" "}
+            <span className="text-lg font-black text-white">merci de confirmer avec moi avant.</span>
+          </>
+        }
       >
         <ChoiceGrid
           value={form.plusOne}
@@ -302,7 +307,15 @@ function StepContent({
   );
 }
 
-function Question({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
+function Question({
+  title,
+  subtitle,
+  children
+}: {
+  title: string;
+  subtitle: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex min-h-[360px] flex-col justify-center">
       <div className="mb-7">
@@ -413,6 +426,12 @@ function Success() {
         </p>
         <div className="flex justify-center">
           <AddToCalendar />
+        </div>
+        <div className="glass mx-auto mt-7 max-w-sm rounded-[1.4rem] p-4">
+          <p className="text-sm font-semibold text-pink-50/90">
+            Une dernière chose : crée ton compte sur l'onglet <span className="font-black text-white">Quiz</span>{" "}
+            pour être associé à un binôme pour le petit jeu de la soirée !
+          </p>
         </div>
       </div>
     </div>

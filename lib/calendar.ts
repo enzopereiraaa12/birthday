@@ -1,6 +1,6 @@
 import { EVENT } from "./event-config";
 
-const DURATION_HOURS = 5;
+const EVENT_DETAILS = "Enzo's birthday, Y2K, 2000s";
 
 function formatICSDate(date: Date) {
   return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
@@ -10,9 +10,15 @@ function escapeICS(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\\;").replace(/\n/g, "\\n");
 }
 
-export function buildICS() {
+function getStartAndEnd() {
   const start = new Date(EVENT.targetDate);
-  const end = new Date(start.getTime() + DURATION_HOURS * 60 * 60 * 1000);
+  const datePart = EVENT.targetDate.split("T")[0];
+  const end = new Date(`${datePart}T23:59:00+01:00`);
+  return { start, end };
+}
+
+export function buildICS() {
+  const { start, end } = getStartAndEnd();
 
   const lines = [
     "BEGIN:VCALENDAR",
@@ -27,7 +33,7 @@ export function buildICS() {
     `DTEND:${formatICSDate(end)}`,
     `SUMMARY:${escapeICS(`${EVENT.birthdayBoy} turns 22`)}`,
     `LOCATION:${escapeICS(EVENT.location)}`,
-    `DESCRIPTION:${escapeICS(`Dress code: ${EVENT.dressCode}. ${EVENT.teaserLine}`)}`,
+    `DESCRIPTION:${escapeICS(EVENT_DETAILS)}`,
     "END:VEVENT",
     "END:VCALENDAR"
   ];
@@ -36,15 +42,14 @@ export function buildICS() {
 }
 
 export function googleCalendarUrl() {
-  const start = new Date(EVENT.targetDate);
-  const end = new Date(start.getTime() + DURATION_HOURS * 60 * 60 * 1000);
+  const { start, end } = getStartAndEnd();
 
   const params = new URLSearchParams({
     action: "TEMPLATE",
     text: `${EVENT.birthdayBoy} turns 22`,
     dates: `${formatICSDate(start)}/${formatICSDate(end)}`,
     location: EVENT.location,
-    details: `Dress code: ${EVENT.dressCode}`
+    details: EVENT_DETAILS
   });
 
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
