@@ -33,9 +33,9 @@ export default function Trailer() {
             <ImageWithFallback
               src={TEASER_PHOTO}
               fallback={TEASER_PHOTO_FALLBACK}
-              alt="Enzo, cover birthday queen him"
+              alt="Soirée Y2K pink, boule disco et ambiance 2000"
               fit="cover"
-              position="50% 22%"
+              position="50% 40%"
               className="h-full w-full"
             />
           </motion.div>
@@ -68,8 +68,12 @@ export default function Trailer() {
             <p className="mb-3 font-display text-xs uppercase tracking-[0.28em] text-pink-200">
               limited edition
             </p>
-            <h2 className="max-w-2xl text-balance font-display text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-              {EVENT.teaserLine}
+            <h2 className="max-w-2xl font-display text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
+              Une nuit.
+              <br />
+              Un anniversaire.
+              <br />
+              1 an de plus.
             </h2>
             <p className="mt-4 max-w-lg text-lg text-pink-50/82">{EVENT.teaserSubline}</p>
           </div>

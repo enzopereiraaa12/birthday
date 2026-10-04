@@ -11,22 +11,22 @@ export const EVENT = {
   issueNumber: "N°22",
   heroKicker: "The Birthday File",
   heroTags: ["TOUCH OF PINK", "GLOSS UP", "CAMERA FLASH READY", "NO BASIC ENERGY"],
-  teaserLine: "Une nuit. Un flash. Une légende.",
-  teaserSubline: "Caméscope, flashs, gloss et chaos très 2000. Appuie play."
+  teaserLine: "Une nuit. Un anniversaire. 1 an de plus.",
+  teaserSubline: "Caméra, flashs, snap et ambiance très 2000."
 };
 
-export const TEASER_PHOTO = "/gallery/memory-4.jpg";
+export const TEASER_PHOTO = "/gallery/teaser-bg.jpg";
 export const TEASER_PHOTO_FALLBACK = "/gallery/memory-4.svg";
 
 export const GALLERY_ITEMS = [
   {
     src: "/gallery/memory-1.jpg",
     fallback: "/gallery/memory-1.svg",
-    alt: "Boss Lady portrait",
+    alt: "Y2K pink mood board",
     width: 250,
-    aspectRatio: "448 / 758",
+    aspectRatio: "648 / 1004",
     fit: "cover",
-    position: "50% 38%"
+    position: "50% 50%"
   },
   {
     src: "/gallery/memory-3.jpg",
